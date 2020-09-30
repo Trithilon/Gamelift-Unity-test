@@ -8,6 +8,6 @@ namespace NetworkingScripts.Api.Matchmaking.Models {
     [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
     public string ipAddress;
     [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
-    public int port;
+    public int port; // TODO: make ushort
   }
 }
