@@ -3,15 +3,12 @@ using Cysharp.Threading.Tasks;
 using MLAPI;
 using NetworkingScripts.Api.Matchmaking;
 using NetworkingScripts.Api.Matchmaking.Models;
+using NetworkingScripts.Extensions;
 using UnityEngine;
 
 namespace NetworkingScripts.Client {
-  public class Client : MonoBehaviour {
-    private MatchmakingClient matchmakingClient;
-
-    public void Awake() {
-      matchmakingClient = new MatchmakingClient();
-    }
+  public class Client {
+    private readonly MatchmakingClient matchmakingClient = new MatchmakingClient();
 
     public async void Start() {
       var ticketId = await matchmakingClient.StartMatchmaking();
@@ -24,7 +21,7 @@ namespace NetworkingScripts.Client {
       enetTransport.Port = (ushort)playerSession.port;
       // Extra data to authenticate with Gamelift
       NetworkingManager.Singleton.NetworkConfig.ConnectionData = System.Text.Encoding.ASCII.GetBytes(playerSession.id);
-      await NetworkingManager.Singleton.StartClient(); // TODO: IDK if I made the custom awaiter correctly.
+      NetworkingManager.Singleton.StartClient(); // TODO: IDK if I made the custom awaiter correctly.
     }
 
     private async UniTask<PlayerSession> WaitForPlayerSession(string ticketId) {
@@ -39,6 +36,5 @@ namespace NetworkingScripts.Client {
 
       throw new Exception("Too many attempts to checking for session");
     }
-
   }
 }

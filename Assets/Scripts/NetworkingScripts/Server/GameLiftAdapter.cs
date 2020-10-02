@@ -8,14 +8,14 @@ using UnityEngine;
 
 namespace NetworkingScripts.Server {
   public class GameLiftAdapter {
-    private readonly Dictionary<ulong, string> playerSessions = default;
+    private readonly Dictionary<ulong, string> playerSessions = new Dictionary<ulong, string>();
     public event EventHandler<GameSession> GameSessionStarted;
 
 
     //This is an example of a simple integration with GameLift server SDK that makes game server 
     //processes go active on Amazon GameLift
     // Called by Monobehaviour entrypoint Start
-    public void Start() {
+    public void Init() {
       //InitSDK establishes a local connection with the Amazon GameLift agent to enable 
       //further communication.
       //This method should be called on launch, before any other GameLift-related initialization occurs.
@@ -38,14 +38,14 @@ namespace NetworkingScripts.Server {
       //Here, the game server tells GameLift what set of files to upload when the game session ends.
       //GameLift uploads everything specified here for the developers to fetch later.
       // must be different for each server if multiple servers on instance
-      var logParameters = new LogParameters(new List<string> { "/local/game/logs/myserver.log" });
+      var logParameters = new LogParameters(new List<string> {"/local/game/logs/myserver.log"});
 
       var processParameters = new ProcessParameters(
-          OnStartGameSession,
-          OnProcessTerminate,
-          OnHealthCheckDelegate,
-          listeningPort,
-          logParameters);
+        OnStartGameSession,
+        OnProcessTerminate,
+        OnHealthCheckDelegate,
+        listeningPort,
+        logParameters);
 
       //Notifies the GameLift service that the server process is ready to host game sessions.
       //Call this method after successfully invoking InitSDK() and completing setup tasks that are required
@@ -53,8 +53,8 @@ namespace NetworkingScripts.Server {
       //Calling ProcessReady tells GameLift this game server is ready to receive incoming game sessions!
       var processReadyOutcome = GameLiftServerAPI.ProcessReady(processParameters);
       Debug.Log(processReadyOutcome.Success
-          ? "ProcessReady success."
-          : $"ProcessReady failure : {processReadyOutcome.Error}");
+        ? "ProcessReady success."
+        : $"ProcessReady failure : {processReadyOutcome.Error}");
     }
 
     //Respond to new game session activation request. GameLift sends activation request 
@@ -62,7 +62,6 @@ namespace NetworkingScripts.Server {
     //and other settings. Once the game server is ready to receive player connections, 
     //invoke GameLiftServerAPI.ActivateGameSession()
     private void OnStartGameSession(GameSession gameSession) {
-
       Debug.Log(":) GAMELIFT SESSION REQUESTED"); //And then do stuff with it maybe.
       try {
         //Notifies the GameLift service that the server process has activated a game session and is now ready to
@@ -79,7 +78,7 @@ namespace NetworkingScripts.Server {
       }
       catch (Exception e) {
         Debug.Log(
-            $":( GAME SESSION ACTIVATION FAILED. ActivateGameSession() exception \n{e.Message}");
+          $":( GAME SESSION ACTIVATION FAILED. ActivateGameSession() exception \n{e.Message}");
       }
     }
 
@@ -111,8 +110,8 @@ namespace NetworkingScripts.Server {
       //a non-zero exit code results in an event message that the process did not exit cleanly.
       var outcome = GameLiftServerAPI.ProcessEnding();
       Debug.Log(outcome.Success
-          ? ":) PROCESSENDING"
-          : $":( PROCESSENDING FAILED. ProcessEnding() returned {outcome.Error}");
+        ? ":) PROCESSENDING"
+        : $":( PROCESSENDING FAILED. ProcessEnding() returned {outcome.Error}");
 
       //Make sure to call GameLiftServerAPI.Destroy() when the application quits. 
       //This resets the local connection with GameLift's agent.
@@ -152,8 +151,8 @@ namespace NetworkingScripts.Server {
           //which allows it to be assigned to a new player.
           var outcome = GameLiftServerAPI.RemovePlayerSession(playerSessionId);
           Debug.Log(outcome.Success
-              ? ":) PLAYER SESSION REMOVED"
-              : $":( PLAYER SESSION REMOVE FAILED. RemovePlayerSession() returned {outcome.Error}");
+            ? ":) PLAYER SESSION REMOVED"
+            : $":( PLAYER SESSION REMOVE FAILED. RemovePlayerSession() returned {outcome.Error}");
         }
         catch (Exception e) {
           Debug.Log($":( PLAYER SESSION REMOVE FAILED. RemovePlayerSession() exception\n{e.Message}");

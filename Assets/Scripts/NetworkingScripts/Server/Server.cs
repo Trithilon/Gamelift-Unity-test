@@ -1,16 +1,32 @@
-﻿using Aws.GameLift.Server.Model;
+﻿using System;
+using System.Diagnostics;
+using Aws.GameLift.Server.Model;
+using Cysharp.Threading.Tasks;
 using MLAPI;
 using NetworkingScripts.Api;
+using NetworkingScripts.Extensions;
 using UnityEngine;
 
 namespace NetworkingScripts.Server {
-  public class Server : MonoBehaviour {
-    private GameLiftAdapter gameLiftAdapter;
+  public class Server {
+    private readonly GameLiftAdapter gameLiftAdapter = new GameLiftAdapter();
+    private readonly Transform transform;
 
-    public void Awake() {
-      gameLiftAdapter = new GameLiftAdapter();
+    public Server(Transform transform) {
+      this.transform = transform;
       gameLiftAdapter.GameSessionStarted += HandleGameLiftSessionStarted;
-      gameLiftAdapter.Start();
+      gameLiftAdapter.Init();
+      // TestInit().Forget();
+    }
+
+    // private async UniTaskVoid TestInit() {
+    //   await UniTask.Delay(TimeSpan.FromSeconds(1));
+    //   HandleGameLiftSessionStarted(this, new GameSession() { IpAddress = "127.0.0.1", Port = 7777});
+    // }
+
+    public void Start() {
+      NetworkingManager.Singleton.ConnectionApprovalCallback += ApprovalCheck;
+      NetworkingManager.Singleton.StartServer();
     }
 
     private void HandleGameLiftSessionStarted(object sender, GameSession gameSession) {
@@ -20,22 +36,15 @@ namespace NetworkingScripts.Server {
       enetTransport.Port = (ushort)gameSession.Port;
     }
 
-    public void Start() {
-      NetworkingManager.Singleton.ConnectionApprovalCallback += ApprovalCheck;
-      NetworkingManager.Singleton.StartServer();
-    }
-
-
-    private void ApprovalCheck(byte[] connectionData, ulong clientId, NetworkingManager.ConnectionApprovedDelegate callback) {
+    private void ApprovalCheck(byte[] connectionData, ulong clientId,
+      NetworkingManager.ConnectionApprovedDelegate callback) {
       var playerSessionId = connectionData.GetString();
-
-      var approved = gameLiftAdapter.ConnectPlayer(clientId, playerSessionId); // TODO: check if the outcome that's returned from this is sync or whether we should be awaiting
+      // TODO: check if the outcome that's returned from this is sync or whether we should be awaiting
+      var approved = gameLiftAdapter.ConnectPlayer(clientId, playerSessionId);
 
       //If approve is true, the connection gets added. If it's false. The client gets disconnected
       // null playerPrefabHash spawns default
-      var t = transform;
-      callback(true, null, approved, t.position, t.rotation);
+      callback(true, null, approved, transform.position, transform.rotation);
     }
-
   }
 }

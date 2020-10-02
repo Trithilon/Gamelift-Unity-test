@@ -1,6 +1,6 @@
 ﻿using System.Text;
 
-namespace NetworkingScripts.Api {
+namespace NetworkingScripts.Extensions {
   public static class PayloadExtensions {
     public static byte[] GetBytes(this string str) {
       return Encoding.UTF8.GetBytes(str);

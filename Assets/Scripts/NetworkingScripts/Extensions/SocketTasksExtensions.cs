@@ -2,7 +2,7 @@
 using System.Runtime.CompilerServices;
 using MLAPI.Transports.Tasks;
 
-namespace NetworkingScripts.Client {
+namespace NetworkingScripts.Extensions {
   public static class SocketTasksExtensions {
     public struct Awaiter : INotifyCompletion {
       private readonly SocketTasks socketTasks;
