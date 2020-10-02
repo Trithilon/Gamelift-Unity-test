@@ -1,4 +1,5 @@
 ﻿using MLAPI;
+using UnityEngine;
 
 namespace NetworkingScripts {
   public class NetworkedSphere : NetworkedBehaviour {
@@ -9,7 +10,7 @@ namespace NetworkingScripts {
 
     // Update is called once per frame
     void Update() {
-
     }
+    
   }
 }

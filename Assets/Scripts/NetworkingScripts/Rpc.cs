@@ -17,7 +17,7 @@ namespace NetworkingScripts {
     }
 
     private void OnCollisionEnter(Collision other) {
-      if (!other.gameObject.CompareTag("Player")) return;
+      if (!other.gameObject.CompareTag("Player") || !IsLocalPlayer) return;
 
       var collisionClientId = other.gameObject.GetComponent<NetworkedObject>().OwnerClientId;
       InvokeClientRpcOnClient(OnCollide, collisionClientId);

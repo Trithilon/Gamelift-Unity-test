@@ -10,7 +10,7 @@ using MLAPI;
 using UnityEngine;
 
 namespace NetworkingScripts {
-  public class NetworkingFacade : NetworkedBehaviour {
+  public class NetworkingFacade : MonoBehaviour {
 #if UNITY_SERVER
     private Server.Server server;
 #else
@@ -36,7 +36,7 @@ namespace NetworkingScripts {
     private void OnApplicationQuit() {
 #if UNITY_SERVER
 #else
-      client.OnApplicationQuit(OwnerClientId);
+      client.OnApplicationQuit();
 #endif
     }
   }

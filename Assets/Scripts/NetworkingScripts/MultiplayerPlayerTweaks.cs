@@ -9,7 +9,9 @@ public class MultiplayerPlayerTweaks : NetworkedBehaviour {
   void Start() {
     if (!IsLocalPlayer) {
       GetComponentInChildren<Camera>().enabled = false;
-      // GetComponent<Animator>().enabled = false;
+      GetComponent<BasicBehaviour>().enabled = false;
+      GetComponent<MoveBehaviour>().enabled = false;
+      GetComponent<FlyBehaviour>().enabled = false;
     }
   }
 }
