@@ -28,7 +28,7 @@ namespace NetworkingScripts.Api.Matchmaking {
         "/manual-gamelift-robot-lambda",
         new MatchmakingTicketRequest { ticketId = ticketId }
       );
-      // new Models.PlayerSession {ipAddress = "127.0.0.1", port = 7777, id = "psess-8d19e25d-866f-4608-a56b-bf705ff92964", status = "COMPLETED"};
+      // new Models.PlayerSession {ipAddress = "127.0.0.1", port = 7777, id = "psess-a832a627-1b85-418f-9b1e-b62e65045192", status = "COMPLETED"};
 
     private class MatchmakingTicketRequest {
       public string type = "check";

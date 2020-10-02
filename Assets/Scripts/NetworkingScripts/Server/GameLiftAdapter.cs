@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading;
 using Aws.GameLift;
 using Aws.GameLift.Server;
 using Aws.GameLift.Server.Model;
@@ -10,6 +11,7 @@ namespace NetworkingScripts.Server {
   public class GameLiftAdapter {
     private readonly Dictionary<ulong, string> playerSessions = new Dictionary<ulong, string>();
     public event EventHandler<GameSession> GameSessionStarted;
+    private CancellationTokenSource idleCancelTokenSource;
 
 
     //This is an example of a simple integration with GameLift server SDK that makes game server 
@@ -38,7 +40,7 @@ namespace NetworkingScripts.Server {
       //Here, the game server tells GameLift what set of files to upload when the game session ends.
       //GameLift uploads everything specified here for the developers to fetch later.
       // must be different for each server if multiple servers on instance
-      var logParameters = new LogParameters(new List<string> {"/local/game/logs/myserver.log"});
+      var logParameters = new LogParameters(new List<string> {"/local/game/myserver.log"});
 
       var processParameters = new ProcessParameters(
         OnStartGameSession,
@@ -71,6 +73,7 @@ namespace NetworkingScripts.Server {
         if (outcome.Success) {
           Debug.Log(":) GAME SESSION ACTIVATED");
           GameSessionStarted?.Invoke(this, gameSession);
+          TerminateIdleGameSession().Forget();
         }
         else {
           Debug.Log($":( GAME SESSION ACTIVATION FAILED. ActivateGameSession() returned {outcome.Error}");
@@ -103,6 +106,20 @@ namespace NetworkingScripts.Server {
       return true;
     }
 
+    private async UniTaskVoid TerminateIdleGameSession() {
+      // Cancel game session after 60 seconds of idle.
+      idleCancelTokenSource = new CancellationTokenSource();
+      try {
+        await UniTask.Delay(TimeSpan.FromSeconds(120), cancellationToken: idleCancelTokenSource.Token);
+        Debug.Log(":) OK WE WAITED TOO LONG BYEEE");
+        GameLiftServerAPI.ProcessEnding();
+      }
+      catch (Exception e) when (e is OperationCanceledException) {
+        // DO NOTHING, it cancelled.
+        Debug.Log(":) NOT IDLE ANYMORE, CARRY ON");
+      }
+    }
+
     private void OnApplicationQuit() {
       //Notifies the GameLift service that the server process is shutting down. This method should be called
       //AFTER all other cleanup tasks, including shutting down all active game sessions.
@@ -131,6 +148,7 @@ namespace NetworkingScripts.Server {
           : $":( PLAYER SESSION REJECTED. AcceptPlayerSession() returned {outcome.Error}");
 
         playerSessions.Add(clientId, playerSessionId);
+        idleCancelTokenSource.Cancel();
         return outcome.Success;
       }
       catch (Exception e) {
@@ -150,6 +168,7 @@ namespace NetworkingScripts.Server {
           //from the server process. In response, GameLift changes the player slot to available,
           //which allows it to be assigned to a new player.
           var outcome = GameLiftServerAPI.RemovePlayerSession(playerSessionId);
+          GameLiftServerAPI.ProcessEnding(); // For now, killing game session on player leaving.          
           Debug.Log(outcome.Success
             ? ":) PLAYER SESSION REMOVED"
             : $":( PLAYER SESSION REMOVE FAILED. RemovePlayerSession() returned {outcome.Error}");

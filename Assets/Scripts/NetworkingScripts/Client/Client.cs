@@ -16,12 +16,13 @@ namespace NetworkingScripts.Client {
       await UniTask.Delay(1000);
       var playerSession = await WaitForPlayerSession(ticketId);
 
+      await UniTask.SwitchToMainThread();
       var enetTransport = (EnetTransport.EnetTransport)NetworkingManager.Singleton.NetworkConfig.NetworkTransport;
       enetTransport.Address = playerSession.ipAddress;
       enetTransport.Port = (ushort)playerSession.port;
       // Extra data to authenticate with Gamelift
       NetworkingManager.Singleton.NetworkConfig.ConnectionData = System.Text.Encoding.ASCII.GetBytes(playerSession.id);
-      NetworkingManager.Singleton.StartClient(); // TODO: IDK if I made the custom awaiter correctly.
+      await NetworkingManager.Singleton.StartClient(); // TODO: IDK if I made the custom awaiter correctly.
     }
 
     private async UniTask<PlayerSession> WaitForPlayerSession(string ticketId) {
