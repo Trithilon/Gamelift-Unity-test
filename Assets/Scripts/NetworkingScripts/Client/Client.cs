@@ -37,5 +37,9 @@ namespace NetworkingScripts.Client {
 
       throw new Exception("Too many attempts to checking for session");
     }
+
+    public void OnApplicationQuit(ulong clientId) {
+      NetworkingManager.Singleton.DisconnectClient(clientId);
+    }
   }
 }

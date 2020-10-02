@@ -4,11 +4,13 @@
 #define UNITY_CLIENT
 #endif
 
+using System;
 using System.Diagnostics;
+using MLAPI;
 using UnityEngine;
 
 namespace NetworkingScripts {
-  public class NetworkingFacade : MonoBehaviour {
+  public class NetworkingFacade : NetworkedBehaviour {
 #if UNITY_SERVER
     private Server.Server server;
 #else
@@ -28,6 +30,13 @@ namespace NetworkingScripts {
       server.Start();
 #else
       client.Start();
+#endif
+    }
+
+    private void OnApplicationQuit() {
+#if UNITY_SERVER
+#else
+      client.OnApplicationQuit(OwnerClientId);
 #endif
     }
   }
