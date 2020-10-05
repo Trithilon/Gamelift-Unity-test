@@ -1316,6 +1316,7 @@ GameObject:
   - component: {fileID: 3048352912069139368}
   - component: {fileID: 3531033759369447936}
   - component: {fileID: 6988161374203220417}
+  - component: {fileID: 1839895834736809889}
   m_Layer: 0
   m_Name: shadow
   m_TagString: Player
@@ -1565,6 +1566,18 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   playerSpeedsText: {fileID: 7009132792617144505}
+--- !u!114 &1839895834736809889
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 739230869707696062}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 34293f8f884546d58b92322e8a7cf12b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &739230869707696064
 GameObject:
   m_ObjectHideFlags: 0
